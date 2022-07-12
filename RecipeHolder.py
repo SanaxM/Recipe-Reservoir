@@ -1,91 +1,50 @@
 import tkinter as tk
 import sqlite3, tkinter.messagebox
 
-
-class Recipe:
-    def __init__(self, name, url):
-        self.name = name
-        self.url = url
-    
-    def getRecipe(self):
-        return self.url
-    
-    def getName(self):
-        return self.name
-    
-    def setRecipe(self, content):
-        self.url = content
-        return "Successfully Written!"
-    
-# class Database:
-#     def __init__(self, fileName, col1, col2):
-#         self.fileName = fileName
-#         self.name = fileName + ".db"
-#         self.col1Name = col1
-#         self.col2Name = col2
-        
-#         connection = sqlite3.connect(self.name)
-#         self.cursor = connection.cursor()
-#         exCommand = "CREATE TABLE IF NOT EXISTS " + fileName + " (" + col1 + " TEXT, " + col2 + " TEXT)"
-#         self.cursor.execute(exCommand)
-#         connection.commit()
-    
-#     def retriveRows(self):
-#         cursor = connection.cursor()
-#         cursor.execute('SELECT * FROM ?', self.fileName)
-#         rows = cursor.fetchall()
-        
-#         return rows
-    
-#     def enterRow(self, value1, value2):
-#         cursor = connection.cursor()
-#         cursor.execute('INSERT INTO recipes VALUES(?, ?)', (value1, value2))
-#         connection.commit()
-        
-#     def closeDB(self):
-#         connection.close()
-    
-    
-
-#list of recipe objects
-recipeList = []
+#connect to the database
 connection = sqlite3.connect('recipes.db')
-cursor = connection.cursor()                                    
+cursor = connection.cursor()
+#if the database doesn't exist, create it with a two-columned table
 cursor.execute('''CREATE TABLE IF NOT EXISTS recipes            
               (name TEXT, link TEXT)''')
+#save the changes
 connection.commit()
-
-# test = Database("tester", "name", "age")
 
 
 #function to retrieve recipe from the textbox
 def retrieveName():
+    #retrieve the item name
     recName = txtBox.get()
     
+    #create a cursor obj to fetch all the rows of the table in the database 
     cursor = connection.cursor()
     cursor.execute('SELECT * FROM recipes')
     rows = cursor.fetchall()
     
-    # rows = test.retriveRows()
-
+    #search the tuples in the rows for the corresponding link to the item name
     for row in rows:
         if row[0] == recName:
+            #paste the url onto the gui
             recipeLbl["text"] = row[1]
+            #return true to exit the function
             return True
+    #if no link is found, display the sentiment on the gui
     recipeLbl["text"] = "Could not find " + recName
 
 def enterRecipe():
-    #create new recipe object
+    #retrieve the name & url from the entry boxes
     name, url = txtBox2.get(), urlBox.get()
-    recipeList.append({name:url})
+    #create a cursor obj to add the entered values to the database
     cursor = connection.cursor()
     cursor.execute('INSERT INTO recipes VALUES(?, ?)', (name, url))
+    #save the changes
     connection.commit()
     
+    #create a pop-up message that indicates success of entry
     tkinter.messagebox.showinfo("Status of Entry", "Success! Your recipe has been entered.")
+    #clear the entry boxes of previous entries
     txtBox2.delete(0, tk.END)
     urlBox.delete(0, tk.END)
-    # test.enterRow(name, url)
     
 
 #create the window
@@ -115,13 +74,13 @@ btn.pack(pady=15)
 recipeLbl = tk.Label(master=titleFrame, bg='white')
 recipeLbl.pack(padx=200, pady=15)
 
-# *****************************
+# ***************************** #
 
-#create a new frame
+#create the entry frame
 enterFrame = tk.Frame(master=window, height=350, width=500, bg='lavender')
 enterFrame.pack(pady=30)
 
-#create the second title label
+#create the entry title label
 title2 = tk.Label(master=enterFrame, text="Enter a New Recipe", bg='lavender', pady=15)
 title2.place(x=280, y=160)
 title2.pack(side="top", pady=10)
@@ -140,7 +99,7 @@ urlBox.pack(padx=200, pady=15)
 btn2 = tk.Button(master=enterFrame, width=10, bg='white', fg='black', text="Enter", command=enterRecipe)
 btn2.pack(pady=15)
 
+#open the window on start
 window.mainloop()
 
-# deploying the app: https://pyinstaller.org/en/stable/
         
