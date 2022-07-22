@@ -1,5 +1,6 @@
 import tkinter as tk
 import sqlite3, tkinter.messagebox
+import webbrowser
 
 #connect to the database
 connection = sqlite3.connect('recipes.db')
@@ -26,6 +27,9 @@ def retrieveName():
         if row[0] == recName:
             #paste the url onto the gui
             recipeLbl["text"] = row[1]
+            #open the link in the default browser
+            if "https" in row[1]:
+                webbrowser.open_new_tab(row[1])
             #return true to exit the function
             return True
     #if no link is found, display the sentiment on the gui
@@ -44,8 +48,7 @@ def enterRecipe():
     tkinter.messagebox.showinfo("Status of Entry", "Success! Your recipe has been entered.")
     #clear the entry boxes of previous entries
     txtBox2.delete(0, tk.END)
-    urlBox.delete(0, tk.END)
-    
+    urlBox.delete(0, tk.END)    
 
 #create the window
 window = tk.Tk()
@@ -98,6 +101,9 @@ urlBox.pack(padx=200, pady=15)
 #create the button for entering a new recipe
 btn2 = tk.Button(master=enterFrame, width=10, bg='white', fg='black', text="Enter", command=enterRecipe)
 btn2.pack(pady=15)
+
+#display the recipe names
+displayRecipes()
 
 #open the window on start
 window.mainloop()
