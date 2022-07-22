@@ -48,7 +48,23 @@ def enterRecipe():
     tkinter.messagebox.showinfo("Status of Entry", "Success! Your recipe has been entered.")
     #clear the entry boxes of previous entries
     txtBox2.delete(0, tk.END)
-    urlBox.delete(0, tk.END)    
+    urlBox.delete(0, tk.END)  
+
+#function to display all recipe names
+def displayRecipes():
+    #connect to the database & fetch all the data
+    cursor = connection.cursor()
+    cursor.execute('SELECT * FROM recipes')
+    rows = cursor.fetchall()
+    
+    #create the default string to amend
+    tempStr = "Entered Recipes:\n"
+    #add every name in the database to the string
+    for row in rows:
+        tempStr += row[0] + "\n"
+    
+    #display the string on the screen
+    recipeLbl["text"] = tempStr
 
 #create the window
 window = tk.Tk()
